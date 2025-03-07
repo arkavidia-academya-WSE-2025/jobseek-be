@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fp-academya-be/internal/repository"
+
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -18,7 +20,7 @@ type BootstrapConfig struct {
 
 func BootStrap(config *BootstrapConfig) {
 	//setup repositories
-
+	userRepository := repository.NewUserRepository(config.Log)
 	//setup use cases
 
 	//setup controllers
