@@ -1,12 +1,14 @@
 package model
 
+import "github.com/google/uuid"
+
 type UserResponse struct {
-	ID        string `json:"id",omitempty`
-	Username  string `json:"username",omitempty`
-	Email     string `json:"email",omitempty`
-	Token     string `json:"token",omitempty`
-	CreatedAt int64  `json:"created_at",omitempty`
-	UpdatedAt int64  `json:"updated_at",omitempty`
+	ID        uuid.UUID `json:"id",omitempty`
+	Username  string    `json:"username",omitempty`
+	Email     string    `json:"email",omitempty`
+	Token     string    `json:"token",omitempty`
+	CreatedAt int64     `json:"created_at",omitempty`
+	UpdatedAt int64     `json:"updated_at",omitempty`
 }
 
 type VerifyUserRequest struct {

@@ -12,7 +12,7 @@ func main() {
 	validate := config.NewValidator(viperConfig)
 	app := config.NewFiber(viperConfig)
 
-	config.Bootstrap(&config.BootstrapConfig{
+	config.BootStrap(&config.BootstrapConfig{
 		DB:       db,
 		App:      app,
 		Log:      log,
