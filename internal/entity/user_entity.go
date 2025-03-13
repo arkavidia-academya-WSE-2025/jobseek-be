@@ -1,6 +1,10 @@
 package entity
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
@@ -8,9 +12,10 @@ type User struct {
 	Email     string    `gorm:"column:email;"`
 	Password  string    `gorm:"column:password;"`
 	Role      string    `gorm:"column:role;"`
+	IsPremium bool      `gorm:"column:is_premium;"`
 	Token     string    `gorm:"column:token"`
-	CreatedAt int64     `gorm:"column:created_at;"`
-	UpdatedAt int64     `gorm:"column:updated_at;"`
+	CreatedAt time.Time `gorm:"column:created_at;"`
+	UpdatedAt time.Time `gorm:"column:updated_at;"`
 }
 
 func (u *User) TableName() string {

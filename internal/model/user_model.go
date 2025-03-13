@@ -1,14 +1,20 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type UserResponse struct {
 	ID        uuid.UUID `json:"id",omitempty`
 	Username  string    `json:"username",omitempty`
 	Email     string    `json:"email",omitempty`
+	Role      string    `json:"role" validate:"required,oneof=admin job_seeker recruiter",omitempty`
 	Token     string    `json:"token",omitempty`
-	CreatedAt int64     `json:"created_at",omitempty`
-	UpdatedAt int64     `json:"updated_at",omitempty`
+	IsPremium bool      `json:"is_premium",omitempty`
+	CreatedAt time.Time `json:"created_at",omitempty`
+	UpdatedAt time.Time `json:"updated_at",omitempty`
 }
 
 type VerifyUserRequest struct {
@@ -19,6 +25,7 @@ type RegisterUserRequest struct {
 	Email    string `json:"email" validate:"required,max=100"`
 	Password string `json:"password" validate:"required,max=100"`
 	Username string `json:"username" validate:"required,max=100"`
+	Role     string `json:"role" validate:"required,max=100"`
 }
 
 type LoginUserRequest struct {
