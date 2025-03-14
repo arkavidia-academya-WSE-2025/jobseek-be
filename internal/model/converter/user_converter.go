@@ -7,13 +7,13 @@ import (
 
 func UserToResponse(user *entity.User) *model.UserResponse {
 	return &model.UserResponse{
-		ID:        user.ID,
+		ID:        &user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
 		Role:      user.Role,
 		IsPremium: user.IsPremium,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+		CreatedAt: &user.CreatedAt,
+		UpdatedAt: &user.UpdatedAt,
 	}
 }
 

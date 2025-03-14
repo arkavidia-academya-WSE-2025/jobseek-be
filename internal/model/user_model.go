@@ -7,14 +7,14 @@ import (
 )
 
 type UserResponse struct {
-	ID        uuid.UUID `json:"id",omitempty`
-	Username  string    `json:"username",omitempty`
-	Email     string    `json:"email",omitempty`
-	Role      string    `json:"role" validate:"required,oneof=admin job_seeker recruiter",omitempty`
-	Token     string    `json:"token",omitempty`
-	IsPremium bool      `json:"is_premium",omitempty`
-	CreatedAt time.Time `json:"created_at",omitempty`
-	UpdatedAt time.Time `json:"updated_at",omitempty`
+	ID        *uuid.UUID `json:"id,omitempty"`
+	Username  string     `json:"username,omitempty"`
+	Email     string     `json:"email,omitempty"`
+	Role      string     `json:"role,omitempty" validate:"required,oneof=admin job_seeker recruiter"`
+	Token     string     `json:"token,omitempty"`
+	IsPremium bool       `json:"is_premium,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
 type VerifyUserRequest struct {
