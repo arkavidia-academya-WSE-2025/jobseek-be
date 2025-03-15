@@ -19,9 +19,8 @@ func BootStrap(config *BootstrapConfig) {
 	
 	//setup controllers
 	userController := http.NewUserController(userUseCase, config.Log)
-	postController := http.NewPostController(postUseCasse, userUseCase, config.Log)
-	profileController := http.NewProfileController(profileUseCase, config.Log)
-	
+	postController := http.NewPostController(postUseCasse, config.Log)
+  profileController := http.NewProfileController(profileUseCase, config.Log)
 	//setup middleware
 	authMiddleware := middleware.NewAuth(userUseCase)
 	
