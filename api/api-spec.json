@@ -1,0 +1,499 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FP academya backend API",
+    "description": "Backend API for academya final project",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/users/register": {
+      "post": {
+        "summary": "Register a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "username", "password", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success register new user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "username": { "type": "string" },
+                        "email": { "type": "string" },
+                        "role": { "type": "string" },
+                        "created_at": { "type": "number" },
+                        "updated_at": { "type": "number" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": { "type": "string", "example": "Bad Request" }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": { "type": "string", "example": "Conflict" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "summary": "Login user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success login user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "username": { "type": "string" },
+                        "email": { "type": "string" },
+                        "role": { "type": "string" },
+                        "created_at": { "type": "number" },
+                        "updated_at": { "type": "number" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": { "type": "string", "example": "Bad Request" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": { "type": "string", "example": "Unauthorized" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/users/current": {
+      "get": {
+        "tags": ["User API"],
+        "description": "Get current user",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success register new user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "number"
+                        },
+                        "updated_at": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/users/logout": {
+      "post": {
+        "description": "Logout user",
+        "tags": ["User API"],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success logout user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/posts": {
+      "get": {
+        "tags": ["Post/feed API"],
+        "description": "Get all posts",
+        "responses": {
+          "200": {
+            "description": "Success get all posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "title": { "type": "string" },
+                          "content": { "type": "string" },
+                          "user_id": { "type": "string" },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string" },
+                              "username": { "type": "string" },
+                              "email": { "type": "string" },
+                              "role": { "type": "string" },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    },
+                    "paging": {
+                      "type": "object",
+                      "properties": {
+                        "page": { "type": "integer" },
+                        "size": { "type": "integer" },
+                        "total_item": { "type": "integer" },
+                        "total_page": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "api/posts": {
+        "post": {
+          "tags": ["Post/feed API"],
+          "description": "Create a new post",
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "schema": {
+                "type": "string"
+              },
+              "description": "Bearer token for authentication"
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "title": { "type": "string", "example": "test" },
+                    "content": { "type": "string", "example": "adwad" }
+                  },
+                  "required": ["title", "content"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Post created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "title": { "type": "string" },
+                          "content": { "type": "string" },
+                          "user_id": { "type": "string" },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string" },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid request body",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "errors": {
+                        "type": "string",
+                        "example": "Title and content are required"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized - Missing or invalid token",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "errors": { "type": "string", "example": "Unauthorized" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/posts/{id}": {
+      "get": {
+        "tags": ["Post/feed API"],
+        "description": "Get a post by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the post to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success get post by ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "title": { "type": "string" },
+                        "content": { "type": "string" },
+                        "user_id": { "type": "string" },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "string" },
+                            "username": { "type": "string" },
+                            "email": { "type": "string" },
+                            "role": { "type": "string" },
+                            "created_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updated_at": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          }
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": { "type": "string", "example": "Post not found" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -15,7 +15,7 @@ func NewViper() *viper.Viper {
 	config.AddConfigPath("./")
 	err := config.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		fmt.Errorf("fatal error config file: %s \n", err)
 	}
 
 	return config

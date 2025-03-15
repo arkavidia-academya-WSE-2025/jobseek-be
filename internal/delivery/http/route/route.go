@@ -36,7 +36,7 @@ func (c *RouteConfig) SetupAuthRoute() {
 	c.App.Get("/api/users/current", c.UserController.Current)
 	c.App.Post("/api/users/logout", c.UserController.Logout)
 	//posts
-	c.App.Post("/api/posts/new", c.PostController.Create)
+	c.App.Post("/api/posts", c.PostController.Create)
 
 	// Add profile routes
 	c.App.Get("/api/profile/jobseeker", c.ProfileController.GetJobseekerProfile)
