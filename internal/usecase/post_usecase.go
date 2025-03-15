@@ -66,6 +66,27 @@ func (c *PostUseCase) Create(ctx context.Context, request *model.PostRequest) (*
 	return converter.PostToResponse(post), nil
 }
 
+func (c *PostUseCase) Get(ctx context.Context, request *model.GetPostRequest) (*model.PostReponse, error) {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+	if err := c.Validate.Struct(request); err != nil {
+		c.Log.Warnf("Invalid request body : %+v", err)
+		return nil, fiber.ErrBadRequest
+	}
+	post := new(entity.Post)
+	if err := c.PostRepository.FindById(tx, post, request.ID); err != nil {
+		c.Log.Warnf("Failed find user by id : %+v", err)
+		return nil, fiber.ErrNotFound
+	}
+	if err := tx.Commit().Error; err != nil {
+		c.Log.Warnf("Failed commit transaction : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return converter.PostToResponse(post), nil
+
+}
+
 func (c *PostUseCase) Search(ctx context.Context, request *model.SearchPostRequest) ([]model.PostReponse, int64, error) {
 	tx := c.DB.WithContext(ctx).Begin()
 	defer tx.Rollback()

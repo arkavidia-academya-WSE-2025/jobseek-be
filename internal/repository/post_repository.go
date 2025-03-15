@@ -19,6 +19,10 @@ func NewPostRepository(log *logrus.Logger) *PostRepository {
 	}
 }
 
+func (r *PostRepository) FindById(db *gorm.DB, post *entity.Post, id string) error {
+	return db.Preload("User").Where("id = ?", id).Take(post).Error
+}
+
 func (r *PostRepository) Search(db *gorm.DB, request *model.SearchPostRequest) ([]entity.Post, int64, error) {
 	var posts []entity.Post
 	if err := db.Scopes(r.FilterPost(request)).Preload("User").Offset((request.Page - 1) * request.Size).Limit(request.Size).Find(&posts).Error; err != nil {

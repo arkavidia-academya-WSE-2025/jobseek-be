@@ -28,3 +28,7 @@ type SearchPostRequest struct {
 	Page    int    `json:"page,omitempty" validate:"min=1"`
 	Size    int    `json:"size,omitempty" validate:"min=1,max=100"`
 }
+
+type GetPostRequest struct {
+	ID string `json:"id" validate:"required,max=100"`
+}

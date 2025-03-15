@@ -18,7 +18,7 @@ type UserResponse struct {
 }
 
 type VerifyUserRequest struct {
-	Token string `validate:"required" max="255" json:"token"`
+	Token string `validate:"required,max=255" json:"token"`
 }
 
 type RegisterUserRequest struct {

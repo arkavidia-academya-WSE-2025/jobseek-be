@@ -49,6 +49,18 @@ func (c *PostController) Create(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.WebResponse[*model.PostReponse]{Data: postResponse})
 }
 
+func (c *PostController) Get(ctx *fiber.Ctx) error {
+	request := &model.GetPostRequest{
+		ID: ctx.Params("id"),
+	}
+	response, err := c.Usecase.Get(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Warnf("Failed to get post")
+		return err
+	}
+	return ctx.JSON(model.WebResponse[*model.PostReponse]{Data: response})
+}
+
 func (c *PostController) List(ctx *fiber.Ctx) error {
 	request := &model.SearchPostRequest{
 		Title:   ctx.Query("title"),
