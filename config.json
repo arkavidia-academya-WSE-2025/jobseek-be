@@ -11,7 +11,7 @@
   },
   "db": {
     "username": "postgres",
-    "password": "root",
+    "password": "Kepobanget0",
     "host": "localhost",
     "port": 5432,
     "name": "fp-academya",
