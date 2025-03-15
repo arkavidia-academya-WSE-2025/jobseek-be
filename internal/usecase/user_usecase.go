@@ -6,6 +6,7 @@ import (
 	"fp-academya-be/internal/model"
 	"fp-academya-be/internal/model/converter"
 	"fp-academya-be/internal/repository"
+	"fp-academya-be/internal/helper"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -47,12 +48,17 @@ func (c *UserUseCase) Verify(ctx context.Context, request *model.VerifyUserReque
 		return nil, fiber.ErrNotFound
 	}
 
+	auth := &model.Auth{
+		ID:   user.ID.String(),
+		Role: user.Role,
+	}
+
 	if err := tx.Commit().Error; err != nil {
 		c.Log.Warnf("Failed commit transaction : %+v", err)
 		return nil, fiber.ErrInternalServerError
 	}
 
-	return &model.Auth{ID: user.ID.String()}, nil
+	return auth, nil
 }
 
 func (c *UserUseCase) Create(ctx context.Context, request *model.RegisterUserRequest) (*model.UserResponse, error) {
@@ -177,4 +183,25 @@ func (c *UserUseCase) Logout(ctx context.Context, request *model.LogoutUserReque
 	}
 
 	return true, nil
+}
+
+// RoleMiddleware creates a middleware that checks if the user has the required role
+func RoleMiddleware(userUsecase *UserUseCase, requiredRole string) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		auth := helper.GetUser(ctx)
+		if auth == nil {
+			return fiber.ErrUnauthorized
+		}
+
+		// Get role from auth context
+		role := auth.Role
+
+		if requiredRole == "company" && role != "company" {
+			return fiber.NewError(fiber.StatusForbidden, "Access denied: company access only")
+		} else if requiredRole == "job_seeker" && role != "job_seeker" {
+			return fiber.NewError(fiber.StatusForbidden, "Access denied: job seeker access only")
+		}
+
+		return ctx.Next()
+	}
 }

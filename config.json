@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "fp-academya-be"
+    "name": "academya"
   },
   "web": {
     "prefork": false,
@@ -11,10 +11,10 @@
   },
   "db": {
     "username": "postgres",
-    "password": "Kepobanget0",
+    "password": "root",
     "host": "localhost",
     "port": 5432,
-    "name": "fp-academya",
+    "name": "academya",
     "pool": {
       "idle": 10,
       "max": 100,

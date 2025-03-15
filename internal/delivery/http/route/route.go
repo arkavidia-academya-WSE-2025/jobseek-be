@@ -2,6 +2,8 @@ package route
 
 import (
 	"fp-academya-be/internal/delivery/http"
+	"fp-academya-be/internal/delivery/http/middleware"
+	"fp-academya-be/internal/usecase"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -13,6 +15,7 @@ type RouteConfig struct {
 	PostController    *http.PostController
 	ProfileController *http.ProfileController
 	AuthMiddleware    fiber.Handler
+	UserUseCase       *usecase.UserUseCase
 }
 
 func (c *RouteConfig) Setup() {
@@ -38,9 +41,12 @@ func (c *RouteConfig) SetupAuthRoute() {
 	//posts
 	c.App.Post("/api/posts", c.PostController.Create)
 
-	// Add profile routes
-	c.App.Get("/api/profile/jobseeker", c.ProfileController.GetJobseekerProfile)
-	c.App.Put("/api/profile/jobseeker", c.ProfileController.UpdateJobseekerProfile)
-	c.App.Get("/api/profile/company", c.ProfileController.GetCompanyProfile)
-	c.App.Put("/api/profile/company", c.ProfileController.UpdateCompanyProfile)
+	// Profile routes with role middleware
+	// Job seeker profile routes
+	c.App.Get("/api/profile/jobseeker", middleware.JobSeekerOnly(c.UserUseCase), c.ProfileController.GetJobseekerProfile)
+	c.App.Put("/api/profile/jobseeker", middleware.JobSeekerOnly(c.UserUseCase), c.ProfileController.UpdateJobseekerProfile)
+	
+	// Company profile routes
+	c.App.Get("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.GetCompanyProfile)
+	c.App.Put("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.UpdateCompanyProfile)
 }

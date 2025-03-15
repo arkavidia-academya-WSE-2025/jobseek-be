@@ -159,6 +159,8 @@ func (c *ProfileUseCase) GetCompanyProfile(ctx context.Context, userID string) (
 		if err == gorm.ErrRecordNotFound {
 			// Create new profile if it doesn't exist
 			profile.UserID = userUUID
+			profile.PhotoURL = ""
+			profile.Description = ""
 			if err := c.CompanyProfileRepo.Create(tx, profile); err != nil {
 				c.Log.Warnf("Failed to create company profile: %+v", err)
 				return nil, fiber.ErrInternalServerError

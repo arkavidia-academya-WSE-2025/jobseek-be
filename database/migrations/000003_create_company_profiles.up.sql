@@ -6,4 +6,4 @@ create table company_profiles(
     description text,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
-)
+); 

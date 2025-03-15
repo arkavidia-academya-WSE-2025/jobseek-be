@@ -54,6 +54,7 @@ func BootStrap(config *BootstrapConfig) {
 		PostController:    postController,
 		ProfileController: profileController,
 		AuthMiddleware:    authMiddleware,
+		UserUseCase:       userUseCase,
 	}
 	routeConfig.Setup()
 }

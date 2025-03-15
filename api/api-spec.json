@@ -14,6 +14,9 @@
     "/api/users/register": {
       "post": {
         "summary": "Register a new user",
+        "tags": [
+          "User API"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -30,10 +33,20 @@
                     "type": "string"
                   },
                   "role": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "job_seeker",
+                      "recruiter",
+                      "admin"
+                    ]
                   }
                 },
-                "required": ["email", "username", "password", "role"]
+                "required": [
+                  "email",
+                  "username",
+                  "password",
+                  "role"
+                ]
               }
             }
           }
@@ -49,12 +62,30 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string" },
-                        "username": { "type": "string" },
-                        "email": { "type": "string" },
-                        "role": { "type": "string" },
-                        "created_at": { "type": "number" },
-                        "updated_at": { "type": "number" }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "string"
+                        },
+                        "is_premium": {
+                          "type": "boolean"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
                       }
                     }
                   }
@@ -63,30 +94,13 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": { "type": "string", "example": "Bad Request" }
-                  }
-                }
-              }
-            }
+            "description": "Bad request"
           },
           "409": {
-            "description": "Conflict - User already exists",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": { "type": "string", "example": "Conflict" }
-                  }
-                }
-              }
-            }
+            "description": "Email already exists"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -94,6 +108,9 @@
     "/api/users/login": {
       "post": {
         "summary": "Login user",
+        "tags": [
+          "User API"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -107,14 +124,17 @@
                     "type": "string"
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Success login user",
+            "description": "Success login",
             "content": {
               "application/json": {
                 "schema": {
@@ -123,12 +143,9 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string" },
-                        "username": { "type": "string" },
-                        "email": { "type": "string" },
-                        "role": { "type": "string" },
-                        "created_at": { "type": "number" },
-                        "updated_at": { "type": "number" }
+                        "token": {
+                          "type": "string"
+                        }
                       }
                     }
                   }
@@ -137,51 +154,31 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid input",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": { "type": "string", "example": "Bad Request" }
-                  }
-                }
-              }
-            }
+            "description": "Bad request"
           },
           "401": {
-            "description": "Unauthorized - Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": { "type": "string", "example": "Unauthorized" }
-                  }
-                }
-              }
-            }
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
     },
-    "api/users/current": {
+    "/api/users/current": {
       "get": {
-        "tags": ["User API"],
-        "description": "Get current user",
-        "parameters": [
+        "summary": "Get current user data",
+        "tags": [
+          "User API"
+        ],
+        "security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "BearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Success register new user",
+            "description": "Success get current user data",
             "content": {
               "application/json": {
                 "schema": {
@@ -191,16 +188,28 @@
                       "type": "object",
                       "properties": {
                         "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "email": {
                           "type": "string"
                         },
-                        "name": {
+                        "username": {
                           "type": "string"
+                        },
+                        "role": {
+                          "type": "string"
+                        },
+                        "is_premium": {
+                          "type": "boolean"
                         },
                         "created_at": {
-                          "type": "number"
+                          "type": "string",
+                          "format": "date-time"
                         },
                         "updated_at": {
-                          "type": "number"
+                          "type": "string",
+                          "format": "date-time"
                         }
                       }
                     }
@@ -208,27 +217,33 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
     },
-    "api/users/logout": {
+    "/api/users/logout": {
       "post": {
-        "description": "Logout user",
-        "tags": ["User API"],
-        "parameters": [
+        "summary": "Logout user",
+        "tags": [
+          "User API"
+        ],
+        "security": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "BearerAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Success logout user",
+            "description": "Success logout",
             "content": {
               "application/json": {
                 "schema": {
@@ -241,17 +256,68 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
     },
-    "api/posts": {
+    "/api/posts": {
       "get": {
-        "tags": ["Post/feed API"],
-        "description": "Get all posts",
+        "summary": "Get list of posts",
+        "tags": [
+          "Post API"
+        ],
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter posts by title"
+          },
+          {
+            "name": "content",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter posts by content"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Items per page"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Success get all posts",
+            "description": "Success get list of posts",
             "content": {
               "application/json": {
                 "schema": {
@@ -262,26 +328,19 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "title": { "type": "string" },
-                          "content": { "type": "string" },
-                          "user_id": { "type": "string" },
-                          "user": {
-                            "type": "object",
-                            "properties": {
-                              "id": { "type": "string" },
-                              "username": { "type": "string" },
-                              "email": { "type": "string" },
-                              "role": { "type": "string" },
-                              "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                              }
-                            }
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
                           },
                           "created_at": {
                             "type": "string",
@@ -297,139 +356,129 @@
                     "paging": {
                       "type": "object",
                       "properties": {
-                        "page": { "type": "integer" },
-                        "size": { "type": "integer" },
-                        "total_item": { "type": "integer" },
-                        "total_page": { "type": "integer" }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "api/posts": {
-        "post": {
-          "tags": ["Post/feed API"],
-          "description": "Create a new post",
-          "parameters": [
-            {
-              "name": "Authorization",
-              "in": "header",
-              "required": true,
-              "schema": {
-                "type": "string"
-              },
-              "description": "Bearer token for authentication"
-            }
-          ],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "title": { "type": "string", "example": "test" },
-                    "content": { "type": "string", "example": "adwad" }
-                  },
-                  "required": ["title", "content"]
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Post created successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "data": {
-                        "type": "object",
-                        "properties": {
-                          "id": { "type": "string" },
-                          "title": { "type": "string" },
-                          "content": { "type": "string" },
-                          "user_id": { "type": "string" },
-                          "user": {
-                            "type": "object",
-                            "properties": {
-                              "id": { "type": "string" },
-                              "created_at": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updated_at": {
-                                "type": "string",
-                                "format": "date-time"
-                              }
-                            }
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          }
+                        "page": {
+                          "type": "integer"
+                        },
+                        "size": {
+                          "type": "integer"
+                        },
+                        "total_item": {
+                          "type": "integer"
+                        },
+                        "total_page": {
+                          "type": "integer"
                         }
                       }
                     }
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Invalid request body",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "errors": {
-                        "type": "string",
-                        "example": "Title and content are required"
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new post",
+        "tags": [
+          "Post API"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "content"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success create new post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
                       }
                     }
                   }
                 }
               }
-            },
-            "401": {
-              "description": "Unauthorized - Missing or invalid token",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "errors": { "type": "string", "example": "Unauthorized" }
-                    }
-                  }
-                }
-              }
             }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
     },
-    "api/posts/{id}": {
+    "/api/posts/{id}": {
       "get": {
-        "tags": ["Post/feed API"],
-        "description": "Get a post by ID",
+        "summary": "Get post by ID",
+        "tags": [
+          "Post API"
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             },
-            "description": "The ID of the post to retrieve"
+            "description": "Post ID"
           }
         ],
         "responses": {
@@ -443,26 +492,19 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string" },
-                        "title": { "type": "string" },
-                        "content": { "type": "string" },
-                        "user_id": { "type": "string" },
-                        "user": {
-                          "type": "object",
-                          "properties": {
-                            "id": { "type": "string" },
-                            "username": { "type": "string" },
-                            "email": { "type": "string" },
-                            "role": { "type": "string" },
-                            "created_at": {
-                              "type": "string",
-                              "format": "date-time"
-                            },
-                            "updated_at": {
-                              "type": "string",
-                              "format": "date-time"
-                            }
-                          }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
                         },
                         "created_at": {
                           "type": "string",
@@ -480,19 +522,311 @@
             }
           },
           "404": {
-            "description": "Post not found",
+            "description": "Post not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/profile/jobseeker": {
+      "get": {
+        "tags": [
+          "Job Seeker Profile API"
+        ],
+        "summary": "Get job seeker profile",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success get job seeker profile",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "errors": { "type": "string", "example": "Post not found" }
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "photo_url": {
+                          "type": "string"
+                        },
+                        "headline": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Job seeker access only"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Job Seeker Profile API"
+        ],
+        "summary": "Update job seeker profile",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photo_url": {
+                    "type": "string",
+                    "format": "url"
+                  },
+                  "headline": {
+                    "type": "string",
+                    "maxLength": 255
                   }
                 }
               }
             }
           }
+        },
+        "responses": {
+          "200": {
+            "description": "Success update job seeker profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "photo_url": {
+                          "type": "string"
+                        },
+                        "headline": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Job seeker access only"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
         }
+      }
+    },
+    "/api/profile/company": {
+      "get": {
+        "tags": [
+          "Company Profile API"
+        ],
+        "summary": "Get company profile",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success get company profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "photo_url": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Company access only"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Company Profile API"
+        ],
+        "summary": "Update company profile",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photo_url": {
+                    "type": "string",
+                    "format": "url"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success update company profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "user_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "photo_url": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Company access only"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }
