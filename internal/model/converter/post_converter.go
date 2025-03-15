@@ -11,6 +11,7 @@ func PostToResponse(post *entity.Post) *model.PostReponse {
 		Title:     post.Title,
 		Content:   post.Content,
 		UserId:    &post.UserID,
+		User:      UserToResponse(&post.User),
 		CreatedAt: &post.CreatedAt,
 		UpdatedAt: &post.UpdatedAt,
 	}

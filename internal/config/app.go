@@ -31,7 +31,7 @@ func BootStrap(config *BootstrapConfig) {
 	postUseCasse := usecase.NewPostUseCase(config.DB, config.Log, config.Validate, postRepository)
 	//setup controllers
 	userController := http.NewUserController(userUseCase, config.Log)
-	postController := http.NewPostController(postUseCasse, userUseCase, config.Log)
+	postController := http.NewPostController(postUseCasse, config.Log)
 	//setup middleware
 	authMiddleware := middleware.NewAuth(userUseCase)
 	routeConfig := route.RouteConfig{
