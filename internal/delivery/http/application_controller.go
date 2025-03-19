@@ -34,9 +34,6 @@ func (c *ApplicationController) Create(ctx *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	// Log the parsed request
-	c.Log.Infof("Parsed request: %+v", request)
-
 	// Set JobSeeker ID
 	parsedUUID, err := uuid.Parse(auth.ID)
 	if err != nil {
@@ -104,5 +101,42 @@ func (c *ApplicationController) List(ctx *fiber.Ctx) error {
 		Data:   responses,
 		Paging: paging,
 	})
+}
 
+func (c *ApplicationController) Update(ctx *fiber.Ctx) error {
+	auth := middleware.GetUser(ctx)
+
+	// Parse request body
+	request := new(model.UpdateApplicationRequest)
+	if err := ctx.BodyParser(request); err != nil {
+		c.Log.Warnf("Failed to parse request body: %v", err)
+		return fiber.ErrBadRequest
+	}
+
+	// Get job ID from URL params
+	applicationIdParam := ctx.Params("id")
+	request.ID = applicationIdParam
+	request.JobSeekerID = auth.ID
+
+	// Call use case to update job
+	updatedJob, err := c.Usecase.Update(ctx.Context(), request)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(updatedJob)
+}
+
+func (c *ApplicationController) Delete(ctx *fiber.Ctx) error {
+	auth := middleware.GetUser(ctx)
+	request := &model.DeleteApplicationRequest{
+		ID:     ctx.Params("id"),
+		UserID: auth.ID,
+	}
+	response, err := c.Usecase.Delete(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Warnf("Failed to delete post")
+		return err
+	}
+	return ctx.JSON(model.WebResponse[*model.ApplicationResponse]{Data: response})
 }

@@ -54,13 +54,16 @@ func (c *RouteConfig) SetupAuthRoute() {
 	c.App.Put("/api/profile/jobseeker", middleware.JobSeekerOnly(c.UserUseCase), c.ProfileController.UpdateJobseekerProfile)
 	//applications
 	c.App.Post("/api/applications", middleware.JobSeekerOnly(c.UserUseCase), c.ApplicationController.Create)
-
+	c.App.Put("/api/applications/:id", middleware.JobSeekerOnly(c.UserUseCase), c.ApplicationController.Update)
+	c.App.Delete("/api/applications/:id", middleware.JobSeekerOnly(c.UserUseCase), c.ApplicationController.Delete)
 	//company
 	c.App.Get("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.GetCompanyProfile)
 	c.App.Put("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.UpdateCompanyProfile)
 
 	//jobs
 	c.App.Post("/api/jobs", middleware.CompanyOnly(c.UserUseCase), c.JobController.Create)
+	c.App.Delete("/api/jobs/:id", middleware.CompanyOnly(c.UserUseCase), c.JobController.Delete)
+	c.App.Put("/api/jobs/:id", middleware.CompanyOnly(c.UserUseCase), c.JobController.Update)
 
 	//applications
 	c.App.Get("/api/applications", middleware.CompanyOnly(c.UserUseCase), c.ApplicationController.List)

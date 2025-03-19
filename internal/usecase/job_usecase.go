@@ -6,6 +6,7 @@ import (
 	"fp-academya-be/internal/model"
 	"fp-academya-be/internal/model/converter"
 	"fp-academya-be/internal/repository"
+	"time"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -88,6 +89,101 @@ func (c *JobUsecase) Get(ctx context.Context, request *model.GetJobRequest) (*mo
 
 	return converter.JobToResponse(job), nil
 
+}
+
+func (c *JobUsecase) Update(ctx context.Context, request *model.UpdateJobRequest) (*model.JobResponse, error) {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	// Validate request
+	if err := c.Validate.Struct(request); err != nil {
+		c.Log.Warnf("Invalid request body : %+v", err)
+		return nil, fiber.ErrBadRequest
+	}
+
+	// Find job by ID
+	job := new(entity.Job)
+	if err := c.JobRepository.FindById(tx, job, request.ID); err != nil {
+		c.Log.Warnf("Failed to find job by ID : %+v", err)
+		return nil, fiber.ErrNotFound
+	}
+
+	// Verify job ownership
+	if err := c.JobRepository.VerifyJobOwnership(tx, request.ID, request.UserID); err != nil {
+		c.Log.Warnf("Unauthorized attempt to update job : %+v", err)
+		return nil, fiber.ErrForbidden
+	}
+
+	// Update fields if provided
+	if request.Title != "" {
+		job.Title = request.Title
+	}
+	if request.Description != "" {
+		job.Description = request.Description
+	}
+	if request.Requirements != "" {
+		job.Requirements = request.Requirements
+	}
+	if request.Location != "" {
+		job.Location = request.Location
+	}
+	if request.Salary > 0 {
+		job.Salary = request.Salary
+	}
+	now := time.Now()
+	job.UpdatedAt = now
+
+	// Update job in database
+	if err := c.JobRepository.Update(tx, job); err != nil {
+		c.Log.Warnf("Failed to update job : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		c.Log.Warnf("Failed to commit transaction : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return converter.JobToResponse(job), nil
+}
+
+func (c *JobUsecase) Delete(ctx context.Context, request *model.DeleteJobRequest) (*model.JobResponse, error) {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	// Validate request
+	if err := c.Validate.Struct(request); err != nil {
+		c.Log.Warnf("Invalid request body : %+v", err)
+		return nil, fiber.ErrBadRequest
+	}
+
+	// Find job by ID
+	job := new(entity.Job)
+	if err := c.JobRepository.FindById(tx, job, request.ID); err != nil {
+		c.Log.Warnf("Failed to find job by ID : %+v", err)
+		return nil, fiber.ErrNotFound
+	}
+
+	// Verify job ownership
+	if err := c.JobRepository.VerifyJobOwnership(tx, request.ID, request.UserID); err != nil {
+		c.Log.Warnf("Unauthorized attempt to delete job : %+v", err)
+		return nil, err // Returns fiber.ErrForbidden if user is not the owner
+	}
+
+	// Delete job
+	if err := c.JobRepository.Delete(tx, job); err != nil {
+		c.Log.Warnf("Failed to delete job : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		c.Log.Warnf("Failed to commit transaction : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return converter.JobToResponse(job), nil
 }
 
 func (c *JobUsecase) Search(ctx context.Context, request *model.SearchJobRequest) ([]model.JobResponse, int64, error) {

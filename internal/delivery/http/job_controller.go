@@ -85,5 +85,42 @@ func (c *JobController) List(ctx *fiber.Ctx) error {
 		Data:   responses,
 		Paging: paging,
 	})
+}
 
+func (c *JobController) Update(ctx *fiber.Ctx) error {
+	auth := middleware.GetUser(ctx)
+
+	// Parse request body
+	request := new(model.UpdateJobRequest)
+	if err := ctx.BodyParser(request); err != nil {
+		c.Log.Warnf("Failed to parse request body: %v", err)
+		return fiber.ErrBadRequest
+	}
+
+	// Get job ID from URL params
+	jobIDParam := ctx.Params("id")
+	request.ID = jobIDParam
+	request.UserID = auth.ID
+
+	// Call use case to update job
+	updatedJob, err := c.Usecase.Update(ctx.Context(), request)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(updatedJob)
+}
+
+func (c *JobController) Delete(ctx *fiber.Ctx) error {
+	auth := middleware.GetUser(ctx)
+	request := &model.DeleteJobRequest{
+		ID:     ctx.Params("id"),
+		UserID: auth.ID,
+	}
+	response, err := c.Usecase.Delete(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Warnf("Failed to delete post")
+		return err
+	}
+	return ctx.JSON(model.WebResponse[*model.JobResponse]{Data: response})
 }

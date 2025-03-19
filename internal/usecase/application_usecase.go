@@ -6,6 +6,7 @@ import (
 	"fp-academya-be/internal/model"
 	"fp-academya-be/internal/model/converter"
 	"fp-academya-be/internal/repository"
+	"time"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -66,6 +67,88 @@ func (c *ApplicationUsecase) Create(ctx context.Context, request *model.Applicat
 	}
 
 	// Return created application
+	return converter.ApplicationToResponse(application), nil
+}
+
+func (c *ApplicationUsecase) Update(ctx context.Context, request *model.UpdateApplicationRequest) (*model.ApplicationResponse, error) {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	// Validate request
+	if err := c.Validate.Struct(request); err != nil {
+		c.Log.Warnf("Invalid request body : %+v", err)
+		return nil, fiber.ErrBadRequest
+	}
+
+	// Fetch application by ID
+	application := new(entity.Application)
+	if err := c.ApplicationRepository.FindById(tx, application, request.ID); err != nil {
+		c.Log.Warnf("Failed to find application : %+v", err)
+		return nil, fiber.ErrNotFound
+	}
+
+	// Update application fields if provided
+	if request.FullName != "" {
+		application.FullName = request.FullName
+	}
+	if request.Address != "" {
+		application.Address = request.Address
+	}
+	if request.CVPath != "" {
+		application.CVPath = request.CVPath
+	}
+	application.UpdatedAt = time.Now()
+
+	// Save updated application
+	if err := c.ApplicationRepository.Update(tx, application); err != nil {
+		c.Log.Warnf("Failed to update application : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		c.Log.Warnf("Failed to commit transaction : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return converter.ApplicationToResponse(application), nil
+}
+
+func (c *ApplicationUsecase) Delete(ctx context.Context, request *model.DeleteApplicationRequest) (*model.ApplicationResponse, error) {
+	tx := c.DB.WithContext(ctx).Begin()
+	defer tx.Rollback()
+
+	// Validate request
+	if err := c.Validate.Struct(request); err != nil {
+		c.Log.Warnf("Invalid request body : %+v", err)
+		return nil, fiber.ErrBadRequest
+	}
+
+	// Verify application ownership
+	if err := c.ApplicationRepository.VerifyApplicationOwnership(tx, request.ID, request.UserID); err != nil {
+		c.Log.Warnf("Unauthorized attempt to delete application : %+v", err)
+		return nil, err // Returns fiber.ErrForbidden if user is not the owner
+	}
+
+	// Find application by ID
+	application := new(entity.Application)
+	if err := c.ApplicationRepository.FindById(tx, application, request.ID); err != nil {
+		c.Log.Warnf("Failed to find application : %+v", err)
+		return nil, fiber.ErrNotFound
+	}
+
+	// Delete application
+	if err := c.ApplicationRepository.Delete(tx, application); err != nil {
+		c.Log.Warnf("Failed to delete application : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		c.Log.Warnf("Failed to commit transaction : %+v", err)
+		return nil, fiber.ErrInternalServerError
+	}
+
 	return converter.ApplicationToResponse(application), nil
 }
 

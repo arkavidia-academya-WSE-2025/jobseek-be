@@ -37,3 +37,16 @@ type SearchApplicationRequest struct {
 type GetApplicationRequest struct {
 	ID string `json:"id" validate:"required,max=100"`
 }
+
+type UpdateApplicationRequest struct {
+	ID          string `json:"id" validate:"required,max=100"`
+	FullName    string `json:"full_name,omitempty" form:"full_name"`
+	Address     string `json:"address,omitempty" form:"address"`
+	CVPath      string `json:"cv_path,omitempty" form:"cv_path"`
+	JobSeekerID string `json:"-"`
+}
+
+type DeleteApplicationRequest struct {
+	ID     string `json:"id" validate:"required,max=100"`
+	UserID string `json:"-" validate:"required,max=100"`
+}

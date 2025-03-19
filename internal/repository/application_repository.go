@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"errors"
 	"fp-academya-be/internal/entity"
 	"fp-academya-be/internal/model"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -20,6 +22,18 @@ func NewApplicationRepository(log *logrus.Logger) *ApplicationRepository {
 }
 func (r *ApplicationRepository) FindById(db *gorm.DB, post *entity.Application, id string) error {
 	return db.Preload("Job").Preload("JobSeeker").Where("id = ?", id).Take(post).Error
+}
+
+func (r *ApplicationRepository) VerifyApplicationOwnership(db *gorm.DB, ApplicationId string, userID string) error {
+	var application entity.Application
+	err := db.Where("id = ? AND job_seeker_id = ?", ApplicationId, userID).Take(&application).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fiber.ErrForbidden // Job exists but doesn't belong to the user
+		}
+		return fiber.ErrInternalServerError // Database error
+	}
+	return nil
 }
 
 func (r *ApplicationRepository) Search(db *gorm.DB, request *model.SearchApplicationRequest) ([]entity.Application, int64, error) {

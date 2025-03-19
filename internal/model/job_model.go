@@ -40,3 +40,18 @@ type SearchJobRequest struct {
 type GetJobRequest struct {
 	ID string `json:"id" validate:"required,max=100"`
 }
+
+type UpdateJobRequest struct {
+	ID           string `json:"id" validate:"required,max=100"`
+	UserID       string `json:"-" validate:"required,max=100"`
+	Title        string `json:"title,omitempty"`
+	Description  string `json:"description,omitempty"`
+	Requirements string `json:"requirements,omitempty"`
+	Location     string `json:"location,omitempty"`
+	Salary       int    `json:"salary,omitempty"`
+}
+
+type DeleteJobRequest struct {
+	ID     string `json:"id" validate:"required,max=100"`
+	UserID string `json:"-" validate:"required,max=100"`
+}
