@@ -10,12 +10,14 @@ import (
 
 // Add to struct
 type RouteConfig struct {
-	App               *fiber.App
-	UserController    *http.UserController
-	PostController    *http.PostController
-	ProfileController *http.ProfileController
-	AuthMiddleware    fiber.Handler
-	UserUseCase       *usecase.UserUseCase
+	App                   *fiber.App
+	UserController        *http.UserController
+	PostController        *http.PostController
+	JobController         *http.JobController
+	ApplicationController *http.ApplicationController
+	ProfileController     *http.ProfileController
+	AuthMiddleware        fiber.Handler
+	UserUseCase           *usecase.UserUseCase
 }
 
 func (c *RouteConfig) Setup() {
@@ -27,9 +29,14 @@ func (c *RouteConfig) SetupGuestRoute() {
 	//users
 	c.App.Post("/api/users/register", c.UserController.Register)
 	c.App.Post("/api/users/login", c.UserController.Login)
+	c.App.Get("/api/users/:id", c.UserController.Get)
 	//posts
 	c.App.Get("/api/posts", c.PostController.List)
 	c.App.Get("/api/posts/:id", c.PostController.Get)
+
+	//jobs
+	c.App.Get("/api/jobs", c.JobController.List)
+	c.App.Get("/api/jobs/:id", c.JobController.Get)
 }
 
 // Add to SetupAuthRoute method
@@ -42,11 +49,21 @@ func (c *RouteConfig) SetupAuthRoute() {
 	c.App.Post("/api/posts", c.PostController.Create)
 
 	// Profile routes with role middleware
-	// Job seeker profile routes
+	//job seeker
 	c.App.Get("/api/profile/jobseeker", middleware.JobSeekerOnly(c.UserUseCase), c.ProfileController.GetJobseekerProfile)
 	c.App.Put("/api/profile/jobseeker", middleware.JobSeekerOnly(c.UserUseCase), c.ProfileController.UpdateJobseekerProfile)
-	
-	// Company profile routes
+	//applications
+	c.App.Post("/api/applications", middleware.JobSeekerOnly(c.UserUseCase), c.ApplicationController.Create)
+
+	//company
 	c.App.Get("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.GetCompanyProfile)
 	c.App.Put("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.UpdateCompanyProfile)
+
+	//jobs
+	c.App.Post("/api/jobs", middleware.CompanyOnly(c.UserUseCase), c.JobController.Create)
+
+	//applications
+	c.App.Get("/api/applications", middleware.CompanyOnly(c.UserUseCase), c.ApplicationController.List)
+	c.App.Get("/api/applications/:id", middleware.CompanyOnly(c.UserUseCase), c.ApplicationController.Get)
+
 }

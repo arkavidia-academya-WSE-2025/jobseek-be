@@ -10,10 +10,9 @@ type PostReponse struct {
 	ID        *uuid.UUID    `json:"id,omitempty"`
 	Title     string        `json:"title,omitempty"`
 	Content   string        `json:"content,omitempty"`
-	UserId    *uuid.UUID    `json:"user_id,omitempty"`
-	User      *UserResponse `json:"user,omitempty"`
 	CreatedAt *time.Time    `json:"created_at,omitempty"`
 	UpdatedAt *time.Time    `json:"updated_at,omitempty"`
+	User      *UserResponse `json:"user,omitempty"`
 }
 
 type PostRequest struct {

@@ -7,5 +7,6 @@ create table jobs(
   location TEXT NOT NULL,
   salary INT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  recruiter_id UUID NOT NULL REFERENCES users(id)
 )
