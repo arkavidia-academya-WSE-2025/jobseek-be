@@ -71,15 +71,9 @@ func BootStrap(config *BootstrapConfig) {
 		JobController:         jobController,
 		ApplicationController: applicationController,
 		ProfileController:     profileController,
+		MessageController:     messageController,
 		AuthMiddleware:        authMiddleware,
 		UserUseCase:           userUseCase,
-		App:               config.App,
-		UserController:    userController,
-		PostController:    postController,
-		ProfileController: profileController,
-		MessageController: messageController,
-		AuthMiddleware:    authMiddleware,
-		UserUseCase:       userUseCase,
 	}
 	routeConfig.Setup()
 }
