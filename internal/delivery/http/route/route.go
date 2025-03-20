@@ -14,6 +14,7 @@ type RouteConfig struct {
 	UserController    *http.UserController
 	PostController    *http.PostController
 	ProfileController *http.ProfileController
+	MessageController *http.MessageController
 	AuthMiddleware    fiber.Handler
 	UserUseCase       *usecase.UserUseCase
 }
@@ -49,4 +50,10 @@ func (c *RouteConfig) SetupAuthRoute() {
 	// Company profile routes
 	c.App.Get("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.GetCompanyProfile)
 	c.App.Put("/api/profile/company", middleware.CompanyOnly(c.UserUseCase), c.ProfileController.UpdateCompanyProfile)
+
+	// Messages routes - available to all authenticated users
+	c.App.Post("/api/messages", c.MessageController.SendMessage)
+	c.App.Post("/api/messages/conversation", c.MessageController.GetConversation)
+	c.App.Post("/api/messages/mark-read", c.MessageController.MarkAsRead)
+	c.App.Get("/api/messages/unread-count", c.MessageController.GetUnreadCount)
 }
