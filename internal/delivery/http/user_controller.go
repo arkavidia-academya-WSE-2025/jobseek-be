@@ -68,6 +68,19 @@ func (c *UserController) Current(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
 }
 
+func (c *UserController) Get(ctx *fiber.Ctx) error {
+	request := &model.GetUserRequest{
+		ID: ctx.Params("id"),
+	}
+	response, err := c.Usecase.Get(ctx.UserContext(), request)
+	if err != nil {
+		c.Log.WithError(err).Warnf("Failed to get current user")
+		return err
+	}
+
+	return ctx.JSON(model.WebResponse[*model.UserResponse]{Data: response})
+}
+
 func (c *UserController) Logout(ctx *fiber.Ctx) error {
 	auth := middleware.GetUser(ctx)
 

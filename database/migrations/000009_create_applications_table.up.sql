@@ -16,6 +16,6 @@ CREATE TABLE IF NOT EXISTS applications (
     cv_path TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
-    job_id UUID NOT NULL REFERENCES jobs(id),
+    job_id UUID NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
     job_seeker_id UUID NOT NULL REFERENCES users(id)
 );
