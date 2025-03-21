@@ -14,9 +14,7 @@
     "/api/users/register": {
       "post": {
         "summary": "Register a new user",
-        "tags": [
-          "User API"
-        ],
+        "tags": ["User API"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -34,19 +32,10 @@
                   },
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "job_seeker",
-                      "recruiter",
-                      "admin"
-                    ]
+                    "enum": ["job_seeker", "recruiter", "admin"]
                   }
                 },
-                "required": [
-                  "email",
-                  "username",
-                  "password",
-                  "role"
-                ]
+                "required": ["email", "username", "password", "role"]
               }
             }
           }
@@ -108,9 +97,7 @@
     "/api/users/login": {
       "post": {
         "summary": "Login user",
-        "tags": [
-          "User API"
-        ],
+        "tags": ["User API"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -124,10 +111,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ]
+                "required": ["email", "password"]
               }
             }
           }
@@ -168,9 +152,7 @@
     "/api/users/current": {
       "get": {
         "summary": "Get current user data",
-        "tags": [
-          "User API"
-        ],
+        "tags": ["User API"],
         "security": [
           {
             "BearerAuth": []
@@ -233,9 +215,7 @@
     "/api/users/logout": {
       "post": {
         "summary": "Logout user",
-        "tags": [
-          "User API"
-        ],
+        "tags": ["User API"],
         "security": [
           {
             "BearerAuth": []
@@ -272,9 +252,7 @@
     "/api/posts": {
       "get": {
         "summary": "Get list of posts",
-        "tags": [
-          "Post API"
-        ],
+        "tags": ["Post API"],
         "parameters": [
           {
             "name": "title",
@@ -382,9 +360,7 @@
       },
       "post": {
         "summary": "Create new post",
-        "tags": [
-          "Post API"
-        ],
+        "tags": ["Post API"],
         "security": [
           {
             "BearerAuth": []
@@ -403,10 +379,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "title",
-                  "content"
-                ]
+                "required": ["title", "content"]
               }
             }
           }
@@ -466,9 +439,7 @@
     "/api/posts/{id}": {
       "get": {
         "summary": "Get post by ID",
-        "tags": [
-          "Post API"
-        ],
+        "tags": ["Post API"],
         "parameters": [
           {
             "name": "id",
@@ -532,9 +503,7 @@
     },
     "/api/profile/jobseeker": {
       "get": {
-        "tags": [
-          "Job Seeker Profile API"
-        ],
+        "tags": ["Job Seeker Profile API"],
         "summary": "Get job seeker profile",
         "security": [
           {
@@ -593,9 +562,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Job Seeker Profile API"
-        ],
+        "tags": ["Job Seeker Profile API"],
         "summary": "Update job seeker profile",
         "security": [
           {
@@ -678,9 +645,7 @@
     },
     "/api/profile/company": {
       "get": {
-        "tags": [
-          "Company Profile API"
-        ],
+        "tags": ["Company Profile API"],
         "summary": "Get company profile",
         "security": [
           {
@@ -739,9 +704,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Company Profile API"
-        ],
+        "tags": ["Company Profile API"],
         "summary": "Update company profile",
         "security": [
           {
@@ -820,9 +783,213 @@
           }
         }
       }
+    },
+    "/api/jobs": {
+      "get": {
+        "tags": ["Job API"],
+        "summary": "List all jobs",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "title", "in": "query", "schema": { "type": "string" } },
+          {
+            "name": "description",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          { "name": "location", "in": "query", "schema": { "type": "string" } },
+          { "name": "salary", "in": "query", "schema": { "type": "integer" } },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Job API"],
+        "summary": "Create a new job",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/jobs/{id}": {
+      "get": {
+        "tags": ["Job API"],
+        "summary": "Get a job by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Job not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Job API"],
+        "summary": "Update an existing job",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "400": { "description": "Bad Request - Invalid input" },
+          "403": { "description": "Forbidden - Not authorized to update job" },
+          "404": { "description": "Not Found - Job does not exist" },
+          "500": { "description": "Internal Server Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Job API"],
+        "summary": "Delete a job",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponse"
+                }
+              }
+            }
+          },
+          "400": { "description": "Bad Request - Invalid request" },
+          "403": { "description": "Forbidden - Not authorized to delete job" },
+          "404": { "description": "Not Found - Job does not exist" },
+          "500": { "description": "Internal Server Error" }
+        }
+      }
     }
   },
   "components": {
+    "schemas": {
+      "JobResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "requirements": { "type": "string" },
+          "location": { "type": "string" },
+          "salary": { "type": "integer" }
+        }
+      },
+      "JobListResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/JobResponse" }
+          },
+          "paging": {
+            "type": "object",
+            "properties": {
+              "page": { "type": "integer" },
+              "size": { "type": "integer" },
+              "totalItem": { "type": "integer" },
+              "totalPage": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "UpdateJobRequest": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "requirements": { "type": "string" },
+          "location": { "type": "string" },
+          "salary": { "type": "integer" }
+        }
+      }
+    },
     "securitySchemes": {
       "BearerAuth": {
         "type": "http",
