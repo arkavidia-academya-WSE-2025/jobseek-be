@@ -13,9 +13,9 @@ func NewFiber(config *viper.Viper) *fiber.App {
 		Prefork:      config.GetBool("web.prefork"),
 	})
 
-	// Set up CORS middleware using the correct package
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000", // Anda bisa menggunakan string atau array string
+		AllowOrigins: "http://localhost:3000", 
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
