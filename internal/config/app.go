@@ -23,6 +23,8 @@ type BootstrapConfig struct {
 }
 
 func BootStrap(config *BootstrapConfig) {
+	// Apply CORS middleware
+	config.App.Use(middleware.CORSConfig())
 	//setup repositories
 	userRepository := repository.NewUserRepository(config.Log)
 	postRepository := repository.NewPostRepository(config.Log)
@@ -60,7 +62,7 @@ func BootStrap(config *BootstrapConfig) {
 	applicationController := http.NewApplicationController(applicationUseCase, config.Log)
 	profileController := http.NewProfileController(profileUseCase, config.Log)
 	messageController := http.NewMessageController(messageUseCase, config.Log)
-	
+
 	//setup middleware
 	authMiddleware := middleware.NewAuth(userUseCase)
 
