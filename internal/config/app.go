@@ -30,6 +30,7 @@ func BootStrap(config *BootstrapConfig) {
 	applicationRepository := repository.NewApplicationRepository(config.Log)
 	jobseekerProfileRepository := repository.NewJobseekerProfileRepository(config.Log)
 	companyProfileRepository := repository.NewCompanyProfileRepository(config.Log)
+	messageRepository := repository.NewMessageRepository(config.Log)
 
 	//setup use cases
 	userUseCase := usecase.NewUserUseCase(config.DB, config.Log, config.Validate, userRepository)
@@ -44,6 +45,13 @@ func BootStrap(config *BootstrapConfig) {
 		companyProfileRepository,
 		userRepository,
 	)
+	messageUseCase := usecase.NewMessageUseCase(
+		config.DB,
+		config.Log,
+		config.Validate,
+		messageRepository,
+		userRepository,
+	)
 
 	//setup controllers
 	userController := http.NewUserController(userUseCase, config.Log)
@@ -51,6 +59,8 @@ func BootStrap(config *BootstrapConfig) {
 	jobController := http.NewJobController(jobUseCase, config.Log)
 	applicationController := http.NewApplicationController(applicationUseCase, config.Log)
 	profileController := http.NewProfileController(profileUseCase, config.Log)
+	messageController := http.NewMessageController(messageUseCase, config.Log)
+	
 	//setup middleware
 	authMiddleware := middleware.NewAuth(userUseCase)
 
@@ -61,6 +71,7 @@ func BootStrap(config *BootstrapConfig) {
 		JobController:         jobController,
 		ApplicationController: applicationController,
 		ProfileController:     profileController,
+		MessageController:     messageController,
 		AuthMiddleware:        authMiddleware,
 		UserUseCase:           userUseCase,
 	}

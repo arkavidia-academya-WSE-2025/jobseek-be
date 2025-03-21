@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Add to struct
+// RouteConfig holds controllers and middleware for route setup
 type RouteConfig struct {
 	App                   *fiber.App
 	UserController        *http.UserController
@@ -16,6 +16,7 @@ type RouteConfig struct {
 	JobController         *http.JobController
 	ApplicationController *http.ApplicationController
 	ProfileController     *http.ProfileController
+	MessageController     *http.MessageController
 	AuthMiddleware        fiber.Handler
 	UserUseCase           *usecase.UserUseCase
 }
@@ -39,7 +40,6 @@ func (c *RouteConfig) SetupGuestRoute() {
 	c.App.Get("/api/jobs/:id", c.JobController.Get)
 }
 
-// Add to SetupAuthRoute method
 func (c *RouteConfig) SetupAuthRoute() {
 	c.App.Use(c.AuthMiddleware)
 	//users
@@ -69,4 +69,9 @@ func (c *RouteConfig) SetupAuthRoute() {
 	c.App.Get("/api/applications", middleware.CompanyOnly(c.UserUseCase), c.ApplicationController.List)
 	c.App.Get("/api/applications/:id", middleware.CompanyOnly(c.UserUseCase), c.ApplicationController.Get)
 
+	// Messages routes - available to all authenticated users
+	c.App.Post("/api/messages", c.MessageController.SendMessage)
+	c.App.Post("/api/messages/conversation", c.MessageController.GetConversation)
+	c.App.Post("/api/messages/mark-read", c.MessageController.MarkAsRead)
+	c.App.Get("/api/messages/unread-count", c.MessageController.GetUnreadCount)
 }
