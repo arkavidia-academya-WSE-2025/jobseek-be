@@ -11,10 +11,10 @@
   },
   "db": {
     "username": "postgres",
-    "password": "root",
+    "password": "raditya138",
     "host": "localhost",
     "port": 5432,
-    "name": "academya",
+    "name": "joobseek",
     "pool": {
       "idle": 10,
       "max": 100,

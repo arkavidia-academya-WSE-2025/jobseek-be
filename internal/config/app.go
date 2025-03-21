@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -24,7 +25,7 @@ type BootstrapConfig struct {
 
 func BootStrap(config *BootstrapConfig) {
 	// Apply CORS middleware
-	config.App.Use(middleware.CORSConfig())
+	config.App.Use(cors.New(middleware.CORSConfig()))
 	//setup repositories
 	userRepository := repository.NewUserRepository(config.Log)
 	postRepository := repository.NewPostRepository(config.Log)
